@@ -1,0 +1,17 @@
+[tasks.docs]
+cmd = 'python -c "from pathlib import Path; src = Path(r\"examples/docs/input.md\").read_text(encoding=\"utf-8\"); Path(r\"examples/docs/output.html\").write_text(\"<html><body><pre>\" + src + \"</pre></body></html>\", encoding=\"utf-8\")"'
+inputs = ["examples/docs/input.md"]
+outputs = ["examples/docs/output.html"]
+desc = "Generate a simple HTML preview from markdown"
+
+[tasks.assets]
+cmd = 'python -c "from pathlib import Path; Path(r\"examples/assets/dist\").mkdir(parents=True, exist_ok=True); Path(r\"examples/assets/dist/source.txt\").write_text(Path(r\"examples/assets/source.txt\").read_text(encoding=\"utf-8\"), encoding=\"utf-8\")"'
+inputs = ["examples/assets/source.txt"]
+outputs = ["examples/assets/dist/source.txt"]
+desc = "Copy an asset into dist"
+
+[tasks.build]
+cmd = 'python -c "print(\"bundle ready\")"'
+deps = ["docs", "assets"]
+phony = true
+desc = "Aggregate example build task"

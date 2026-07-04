@@ -1,0 +1,13 @@
+import {
+  "moonbitlang/core/abort",
+  "moonbitlang/core/debug",
+  "moonbitlang/async",
+  "moonbitlang/x/sys",
+  "px830/moonforge",
+}
+
+supported_targets = "+native"
+
+options(
+  "is-main": true,
+)

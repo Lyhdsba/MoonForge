@@ -1,0 +1,14 @@
+import {
+  "moonbitlang/core/bench",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+  "moonbitlang/async",
+  "moonbitlang/x/crypto",
+  "moonbitlang/x/fs",
+  "bobzhang/toml",
+  "trkbt10/subprocess",
+}
+
+supported_targets = "+native"

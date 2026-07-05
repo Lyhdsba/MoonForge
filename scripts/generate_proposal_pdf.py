@@ -39,7 +39,7 @@ def wrap_text(text: str, max_units: int) -> list[str]:
 def parse_source() -> tuple[str, list[tuple[str, list[str]]]]:
     raw = SOURCE.read_text(encoding="utf-8")
     lines = [line.rstrip() for line in raw.splitlines()]
-    title = "MoonForge Proposal"
+    title = "MoonForge 项目申报书"
     sections: list[tuple[str, list[str]]] = []
     current_title = ""
     current_body: list[str] = []
@@ -81,14 +81,14 @@ def draw_header(c: canvas.Canvas, title: str) -> None:
     c.drawCentredString(176 * mm, 270.5 * mm, "OSC2026")
 
     tags = [
-        ("Tooling", colors.HexColor("#2C6AA0")),
-        ("Original", colors.HexColor("#2D855B")),
-        ("Scalable", colors.HexColor("#C47A2C")),
+        ("工具", colors.HexColor("#2C6AA0")),
+        ("原创", colors.HexColor("#2D855B")),
+        ("扩展", colors.HexColor("#C47A2C")),
     ]
     x = 22 * mm
     y = 255 * mm
     for text, fill in tags:
-        width = (len(text) * 3.8 + 12) * mm / 3.5
+        width = (visual_width(text) * 3.2 + 16) * mm / 3.5
         c.setFillColor(fill)
         c.roundRect(x, y - 4.5 * mm, width, 7 * mm, 2.3 * mm, fill=1, stroke=0)
         c.setFillColor(colors.white)
@@ -100,7 +100,7 @@ def draw_header(c: canvas.Canvas, title: str) -> None:
 def draw_intro(c: canvas.Canvas, sections: list[tuple[str, list[str]]]) -> None:
     intro_text = ""
     for title, body in sections:
-        if "简介" in title:
+        if "项目简介" in title:
             intro_text = " ".join(body)
             break
     if not intro_text and sections:
@@ -189,7 +189,7 @@ def main() -> None:
     c.roundRect(16 * mm, 14 * mm, 178 * mm, 38 * mm, 4 * mm, fill=1, stroke=0)
     c.setFillColor(colors.HexColor("#143A5A"))
     c.setFont("ProposalBold", 12)
-    c.drawString(21 * mm, 45 * mm, "Repository & Delivery")
+    c.drawString(21 * mm, 45 * mm, "仓库与交付")
 
     c.setFillColor(colors.HexColor("#2E3C4D"))
     c.setFont("ProposalRegular", 9.1)
@@ -202,7 +202,7 @@ def main() -> None:
 
     c.setFillColor(colors.HexColor("#66788A"))
     c.setFont("ProposalRegular", 8.5)
-    c.drawRightString(190 * mm, 18 * mm, "One-page PDF proposal for OSC2026 submission")
+    c.drawRightString(190 * mm, 18 * mm, "一页 PDF，可直接用于 OSC2026 项目申报")
 
     c.save()
     print(f"generated: {OUTPUT}")

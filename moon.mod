@@ -13,15 +13,15 @@ name = "px830/moonforge"
 
 version = "0.1.0"
 
-readme = "README.mbt.md"
+readme = "README.md"
 
-repository = ""
+repository = "https://github.com/Lyhdsba/MoonForge"
 
 license = "Apache-2.0"
 
-keywords = [ ]
+keywords = ["moonbit", "build-tool", "task-runner", "incremental-build"]
 
-description = ""
+description = "A MoonBit-native incremental task runner for small builds, codegen workflows, and local CI orchestration."
 
 preferred_target = "native"
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-07-07
+
+- Aligned module identity with the Mooncakes account for publication
+- Rewrote the repository README and added contribution, security, and release docs
+- Added portable acceptance verification and GitHub Actions CI for final closeout
+- Published `Lyhdsba/moonforge@0.1.0` to Mooncakes
+
 ## 2026-07-05
 
 - Cleaned repository-facing README files and removed invalid README path links

@@ -1,0 +1,122 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Lyhdsba/moonforge"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn clean_project(Project) -> Array[String] raise MoonforgeError
+
+pub fn doctor(Project) -> Array[String] raise MoonforgeError
+
+pub fn duplicate_outputs(Project) -> Array[(String, String, String)]
+
+pub fn empty_cache() -> CacheSnapshot
+
+pub fn explain_task(Project, String?) -> Array[String] raise MoonforgeError
+
+pub fn help_text() -> String
+
+pub fn list_tasks(Project) -> Array[String]
+
+pub fn load_cache(Project) -> CacheSnapshot raise MoonforgeError
+
+pub fn load_project(root? : String, config_path? : String) -> Project raise MoonforgeError
+
+pub fn make_plan(Project, CacheSnapshot, String?) -> (Array[String], Array[Array[String]], Array[TaskPlan]) raise MoonforgeError
+
+pub fn parse_cli(Array[String]) -> CliCommand raise MoonforgeError
+
+pub fn plan_for_task(Array[TaskPlan], String) -> TaskPlan?
+
+pub fn reason_message(PlanReason) -> String
+
+pub fn render_graph(Project, String?) -> Array[String] raise MoonforgeError
+
+pub async fn run_target(Project, String?, jobs? : Int) -> RunSummary raise MoonforgeError
+
+pub fn save_cache(Project, CacheSnapshot) -> Unit raise MoonforgeError
+
+pub fn task_levels(Project, Array[String]) -> Array[Array[String]] raise MoonforgeError
+
+pub fn task_order(Project, String?) -> Array[String] raise MoonforgeError
+
+pub fn task_summary_line(TaskPlan) -> String
+
+pub fn validate_project(Project) -> Unit raise MoonforgeError
+
+// Errors
+type MoonforgeError derive(@debug.Debug)
+
+// Types and methods
+pub struct CacheEntry {
+  command_hash : String
+  input_hash : String
+  output_hash : String
+  duration_ms : Int
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+
+pub struct CacheSnapshot {
+  version : Int
+  tasks : Map[String, CacheEntry]
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+
+pub(all) enum CliCommand {
+  Help
+  List(config_path~ : String)
+  Graph(config_path~ : String, target~ : String?)
+  Explain(config_path~ : String, target~ : String?)
+  Clean(config_path~ : String)
+  Doctor(config_path~ : String)
+  Run(config_path~ : String, target~ : String?, jobs~ : Int)
+} derive(@debug.Debug)
+
+pub(all) enum PlanReason {
+  FirstRun
+  PhonyTask
+  CommandChanged
+  InputsChanged
+  OutputMissing
+  DependencyReran(Array[String])
+  UpToDate
+} derive(Eq, @debug.Debug)
+
+pub struct Project {
+  root : String
+  config_path : String
+  tasks : Map[String, Task]
+} derive(@debug.Debug)
+
+pub struct RunSummary {
+  plans : Array[TaskPlan]
+  executed : Array[String]
+  skipped : Array[String]
+} derive(@debug.Debug)
+
+pub struct Task {
+  name : String
+  cmd : String
+  deps : Array[String]
+  inputs : Array[String]
+  outputs : Array[String]
+  phony : Bool
+  desc : String?
+} derive(Eq, @debug.Debug)
+pub fn Task::is_effectively_phony(Self) -> Bool
+
+pub struct TaskPlan {
+  task : Task
+  reason : PlanReason
+  should_run : Bool
+  command_hash : String
+  input_hash : String
+} derive(@debug.Debug)
+
+type VisitState derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+

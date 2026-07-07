@@ -9,7 +9,7 @@
 //   "moonbitlang/x@0.4.6",
 // }
 
-name = "px830/moonforge"
+name = "Lyhdsba/moonforge"
 
 version = "0.1.0"
 
@@ -19,7 +19,7 @@ repository = "https://github.com/Lyhdsba/MoonForge"
 
 license = "Apache-2.0"
 
-keywords = ["moonbit", "build-tool", "task-runner", "incremental-build"]
+keywords = [ "moonbit", "build-tool", "task-runner", "incremental-build" ]
 
 description = "A MoonBit-native incremental task runner for small builds, codegen workflows, and local CI orchestration."
 

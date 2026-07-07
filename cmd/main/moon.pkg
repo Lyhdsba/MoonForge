@@ -3,7 +3,7 @@ import {
   "moonbitlang/core/debug",
   "moonbitlang/async",
   "moonbitlang/x/sys",
-  "px830/moonforge",
+  "Lyhdsba/moonforge",
 }
 
 supported_targets = "+native"

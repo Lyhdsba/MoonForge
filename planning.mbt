@@ -11,7 +11,7 @@ pub fn make_plan(
   for name in order {
     let task = get_task(project, name)
     let command_hash = hash_string([task.cmd])
-    let input_hash = fingerprint_paths(task.inputs)
+    let input_hash = fingerprint_paths(project.root, task.inputs)
     let dependency_runs = []
     for dep in task.deps {
       match plan_map.get(dep) {
@@ -24,7 +24,7 @@ pub fn make_plan(
     } else {
       match cache.tasks.get(task.name) {
         None => FirstRun
-        Some(_) if !outputs_exist(task) => OutputMissing
+        Some(_) if !outputs_exist(project.root, task) => OutputMissing
         Some(entry) if entry.command_hash != command_hash => CommandChanged
         Some(entry) if entry.input_hash != input_hash => InputsChanged
         Some(_) if !dependency_runs.is_empty() =>

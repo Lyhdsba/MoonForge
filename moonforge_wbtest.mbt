@@ -40,3 +40,38 @@ test "chunk_names respects job size" {
     ),
   )
 }
+
+///|
+test "task_levels keeps each layer isolated" {
+  let project : Project = {
+    root: ".",
+    config_path: "Moonforge.toml",
+    tasks: {
+      "generate": {
+        name: "generate",
+        cmd: "echo generate",
+        deps: [],
+        inputs: [],
+        outputs: ["dist/a.txt"],
+        phony: false,
+        desc: None,
+      },
+      "bundle": {
+        name: "bundle",
+        cmd: "echo bundle",
+        deps: ["generate"],
+        inputs: ["dist/a.txt"],
+        outputs: ["dist/b.txt"],
+        phony: false,
+        desc: None,
+      },
+    },
+  }
+  let levels = task_levels(project, ["generate", "bundle"])
+  debug_inspect(
+    levels,
+    content=(
+      #|[["generate"], ["bundle"]]
+    ),
+  )
+}

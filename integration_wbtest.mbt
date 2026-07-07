@@ -13,12 +13,12 @@ fn reset_dir(path : String) -> Unit raise MoonforgeError {
 
 ///|
 fn write_source_command() -> String {
-  "python -c \"from pathlib import Path; Path(r'build').mkdir(parents=True, exist_ok=True); Path(r'build/source.txt').write_text('alpha', encoding='utf-8')\""
+  "python -c \"from pathlib import Path; Path(r\\\"build\\\").mkdir(parents=True, exist_ok=True); Path(r\\\"build/source.txt\\\").write_text(\\\"alpha\\\", encoding=\\\"utf-8\\\")\""
 }
 
 ///|
 fn copy_bundle_command() -> String {
-  "python -c \"from pathlib import Path; Path(r'build/bundle.txt').write_text(Path(r'build/source.txt').read_text(encoding='utf-8') + '-bundle', encoding='utf-8')\""
+  "python -c \"from pathlib import Path; Path(r\\\"build/bundle.txt\\\").write_text(Path(r\\\"build/source.txt\\\").read_text(encoding=\\\"utf-8\\\") + \\\"-bundle\\\", encoding=\\\"utf-8\\\")\""
 }
 
 ///|
@@ -106,6 +106,9 @@ async test "explain shows up to date after cached run" {
   write_config(config_path)
   let project = load_project(root~, config_path~)
   ignore(run_target(project, Some("bundle")))
+  ignore(run_target(project, Some("bundle")))
   let lines = explain_task(project, Some("bundle"))
-  assert_true(lines.join("\n").contains("up to date"))
+  let text = lines.join("\n")
+  assert_true(text.contains("[skip] generate - up to date"))
+  assert_true(text.contains("[skip] bundle - up to date"))
 }

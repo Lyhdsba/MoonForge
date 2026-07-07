@@ -1,4 +1,14 @@
 ///|
+fn resolve_project_path(root : String, path : String) -> String {
+  let normalized = normalize_path(path)
+  if normalized.has_prefix("/") || normalized.contains(":/") {
+    normalized
+  } else {
+    join_path(root, normalized)
+  }
+}
+
+///|
 fn file_signature(path : String) -> String raise MoonforgeError {
   let normalized = normalize_path(path)
   if !@fs.path_exists(normalized) {
@@ -37,8 +47,11 @@ fn file_signature(path : String) -> String raise MoonforgeError {
 }
 
 ///|
-fn fingerprint_paths(paths : Array[String]) -> String raise MoonforgeError {
-  let normalized = paths.map(normalize_path)
+fn fingerprint_paths(
+  root : String,
+  paths : Array[String],
+) -> String raise MoonforgeError {
+  let normalized = paths.map(fn(path) { resolve_project_path(root, path) })
   let parts = []
   for path in normalized {
     parts.push(path)
@@ -48,12 +61,12 @@ fn fingerprint_paths(paths : Array[String]) -> String raise MoonforgeError {
 }
 
 ///|
-fn outputs_exist(task : Task) -> Bool {
+fn outputs_exist(root : String, task : Task) -> Bool {
   if task.outputs.is_empty() {
     true
   } else {
     for output in task.outputs {
-      if !@fs.path_exists(output) {
+      if !@fs.path_exists(resolve_project_path(root, output)) {
         return false
       }
     }

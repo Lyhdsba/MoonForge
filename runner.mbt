@@ -66,13 +66,9 @@ async fn run_one(
   }
   ignore(result)
   let duration_ms = (@bench.monotonic_clock_end(started) * 1000.0).to_int()
-  let output_hash = fingerprint_paths(plan.task.outputs)
-  {
-    command_hash: plan.command_hash,
-    input_hash: plan.input_hash,
-    output_hash,
-    duration_ms,
-  }
+  let input_hash = fingerprint_paths(project.root, plan.task.inputs)
+  let output_hash = fingerprint_paths(project.root, plan.task.outputs)
+  { command_hash: plan.command_hash, input_hash, output_hash, duration_ms }
 }
 
 ///|

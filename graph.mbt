@@ -81,7 +81,10 @@ pub fn task_levels(
       max_level.val = level
     }
   }
-  let grouped = Array::make(max_level.val + 1, [])
+  let grouped = []
+  for _ in 0..<=max_level.val {
+    grouped.push([])
+  }
   for name in order {
     let level = levels.get(name).unwrap()
     grouped[level].push(name)

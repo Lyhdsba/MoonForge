@@ -9,8 +9,25 @@ fn[T] fatal(message : String, show_help? : Bool = false) -> T {
 }
 
 ///|
+fn normalize_cli_args(args : Array[String]) -> Array[String] {
+  if args.is_empty() {
+    []
+  } else {
+    let first = args[0]
+    if first.contains("/") ||
+      first.contains("\\") ||
+      first.has_suffix(".exe") ||
+      first.has_suffix(".c") {
+      args[1:].to_owned()
+    } else {
+      args
+    }
+  }
+}
+
+///|
 async fn main {
-  let args = @sys.get_cli_args()
+  let args = normalize_cli_args(@sys.get_cli_args())
   let command = @moonforge.parse_cli(args) catch {
     err => fatal("error: \{@debug.to_string(err)}", show_help=true)
   }

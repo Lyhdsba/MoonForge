@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup MoonBit
+        uses: hustcer/setup-moonbit@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python deps
+        run: python -m pip install pypdf
+
+      - name: Update MoonBit registry
+        run: moon update
+
+      - name: Moon info
+        run: moon info
+
+      - name: Moon format check
+        run: moon fmt --check
+
+      - name: Moon check
+        run: moon check
+
+      - name: Moon test
+        run: moon test
+
+      - name: CLI smoke
+        run: moon run --target native cmd/main -- list
+
+      - name: Acceptance script
+        shell: pwsh
+        run: ./scripts/verify_acceptance.ps1

@@ -2,7 +2,7 @@
 
 ## Near-Term
 
-- Richer `doctor` checks for overlapping directories and undeclared outputs
+- DOT / Mermaid graph export for review materials
 - Better `graph` output formats such as Mermaid or DOT
 - Optional stricter mode for non-phony tasks without outputs
 - Command timing summaries and lightweight benchmark reporting

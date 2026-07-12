@@ -36,6 +36,16 @@ function Test-NativeCompiler {
   return $false
 }
 
+function Get-InterfaceDigest {
+  $paths = @("pkg.generated.mbti", "cmd/main/pkg.generated.mbti")
+  $parts = @()
+  foreach ($path in $paths) {
+    Assert-True (Test-Path $path) "Missing generated interface file: $path"
+    $parts += (Get-FileHash $path -Algorithm SHA256).Hash
+  }
+  return ($parts -join "|")
+}
+
 $requiredFiles = @(
   "README.md",
   "LICENSE",
@@ -43,6 +53,10 @@ $requiredFiles = @(
   "CONTRIBUTING.md",
   "SECURITY.md",
   ".github/workflows/ci.yml",
+  ".github/workflows/publish.yml",
+  "docs/official-requirements.md",
+  "docs/source-attribution.md",
+  "docs/acceptance-checklist.md",
   "proposal/one-page-proposal.md"
 )
 
@@ -56,6 +70,7 @@ Assert-True (($readme.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0)
 $readmeText = Get-Content "README.md" -Raw -Encoding UTF8
 Assert-True (-not ($readmeText -match "\]\(/")) "README.md contains an absolute local Markdown link."
 Assert-True ($readmeText.Contains("MoonForge")) "README.md must mention the project name."
+Assert-True ($readmeText.Contains("moonforge stats")) "README.md must document the stats command."
 
 $python = Resolve-Python
 
@@ -71,17 +86,36 @@ Assert-True ($pageCount.Trim() -eq "1") "Proposal PDF must contain exactly 1 pag
 $moonModText = Get-Content "moon.mod" -Raw -Encoding UTF8
 Assert-True ($moonModText.Contains('name = "Lyhdsba/moonforge"')) "moon.mod must use the Mooncakes account identity."
 
+moon version --all | Out-Null
+moon check --fmt --deny-warn --target native | Out-Null
 moon info | Out-Null
-moon fmt --check | Out-Null
-moon check | Out-Null
+$firstDigest = Get-InterfaceDigest
+moon info | Out-Null
+$secondDigest = Get-InterfaceDigest
+Assert-True ($firstDigest -eq $secondDigest) "moon info output is not stable across consecutive runs."
+moon check --deny-warn --target native | Out-Null
 
 $commitCount = git rev-list --count HEAD
 $commitCountInt = [int]$commitCount
-Assert-True ($commitCountInt -ge 10 -and $commitCountInt -le 20) "Commit count must stay between 10 and 20."
+Assert-True ($commitCountInt -ge 15) "Commit history should show sustained public development."
+
+$moonBitLines = [int](& $python scripts/count_moonbit_lines.py)
+Assert-True ($moonBitLines -ge 1600) "Tracked MoonBit source should stay above the expanded acceptance baseline."
+
+$originHead = [string](git ls-remote --symref origin HEAD)
+Assert-True (($originHead -match "refs/heads/main")) "GitHub remote default branch must be main."
+
+$shortlog = git shortlog -sne --all
+Assert-True ($shortlog -match "Lyhdsba <2749233024@qq.com>") "Expected repository owner identity missing from commit history."
+
+if ((git remote) -contains "gitlink") {
+  $gitlinkHead = [string](git ls-remote --symref gitlink HEAD)
+  Assert-True (($gitlinkHead -match "refs/heads/main")) "GitLink remote default branch must be main."
+}
 
 if (Test-NativeCompiler) {
-  moon test | Out-Null
-  moon run --target native cmd/main -- list | Out-Null
+  moon test --deny-warn --target native | Out-Null
+  moon run --target native cmd/main -- stats | Out-Null
   Write-Host "native verification: passed"
 } else {
   Write-Host "native verification: skipped (no system C compiler found)"

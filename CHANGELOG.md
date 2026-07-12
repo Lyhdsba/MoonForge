@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-07-12
+
+- Added `moonforge stats` for reviewer-facing repository diagnostics
+- Expanded `doctor` with missing-input, overlapping-output, and reachability checks
+- Refreshed OSC2026 acceptance materials, official-requirements snapshot, and source-attribution docs
+- Upgraded CI to MoonBit `0.10.3` with strict native verification and publish workflow
+- Published `Lyhdsba/moonforge@0.1.1` to Mooncakes
+
 ## 2026-07-07
 
 - Aligned module identity with the Mooncakes account for publication

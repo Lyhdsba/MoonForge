@@ -75,3 +75,47 @@ test "task_levels keeps each layer isolated" {
     ),
   )
 }
+
+///|
+test "project_stats summarizes the dependency graph" {
+  let project : Project = {
+    root: ".",
+    config_path: "Moonforge.toml",
+    tasks: {
+      "generate": {
+        name: "generate",
+        cmd: "echo generate",
+        deps: [],
+        inputs: ["src/input.txt"],
+        outputs: ["dist/a.txt"],
+        phony: false,
+        desc: None,
+      },
+      "bundle": {
+        name: "bundle",
+        cmd: "echo bundle",
+        deps: ["generate"],
+        inputs: ["dist/a.txt"],
+        outputs: ["dist/b.txt"],
+        phony: false,
+        desc: None,
+      },
+      "report": {
+        name: "report",
+        cmd: "echo report",
+        deps: ["bundle"],
+        inputs: ["dist/b.txt"],
+        outputs: [],
+        phony: true,
+        desc: None,
+      },
+    },
+  }
+  let stats = project_stats(project)
+  assert_eq(stats.default_target, "bundle")
+  assert_eq(stats.total_tasks, 3)
+  assert_eq(stats.root_tasks, 1)
+  assert_eq(stats.leaf_tasks, 1)
+  assert_eq(stats.max_depth, 2)
+  assert_eq(stats.phony_tasks, 1)
+}

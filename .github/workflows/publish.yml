@@ -1,0 +1,51 @@
+name: publish-package
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup MoonBit
+        uses: hustcer/setup-moonbit@v1
+        with:
+          version: "0.10.3"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Moon version
+        run: moon version --all
+
+      - name: Update MoonBit registry
+        run: moon update
+
+      - name: Prepublish check
+        shell: bash
+        run: |
+          moon check --fmt --deny-warn --target native
+          moon info
+          git diff --exit-code -- pkg.generated.mbti cmd/main/pkg.generated.mbti
+          moon test --deny-warn --target native
+
+      - name: Publish
+        env:
+          SECRET: ${{ secrets.MOONCAKES_MOONBIT_COMMUNITY_TOKEN }}
+        shell: bash
+        run: |
+          if [ -z "$SECRET" ]; then
+            echo "Error: MOONCAKES_MOONBIT_COMMUNITY_TOKEN secret is not set."
+            echo "Please contact an admin to grant access to this secret."
+            exit 1
+          fi
+          echo "$SECRET" > ~/.moon/credentials.json
+          moon publish
+          rm ~/.moon/credentials.json

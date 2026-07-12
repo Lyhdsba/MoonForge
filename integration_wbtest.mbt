@@ -112,3 +112,41 @@ async test "explain shows up to date after cached run" {
   assert_true(text.contains("[skip] generate - up to date"))
   assert_true(text.contains("[skip] bundle - up to date"))
 }
+
+///|
+test "doctor detects missing inputs without producing dependencies" {
+  let root = fixture_dir("missing-inputs")
+  reset_dir(root)
+  let config_path = join_path(root, "Moonforge.toml")
+  write_text_file(
+    config_path,
+    [
+      "[tasks.build]", "cmd = 'python -c \"print(1)\"'", "inputs = [\"missing/data.txt\"]",
+      "outputs = [\"dist/out.txt\"]", "",
+    ].join("\n"),
+  )
+  let project = load_project(root~, config_path~)
+  let findings = doctor(project)
+  assert_true(findings.join("\n").contains("declares missing input"))
+}
+
+///|
+test "doctor allows dependency-produced inputs before execution" {
+  let root = fixture_dir("dependency-inputs")
+  reset_dir(root)
+  let config_path = join_path(root, "Moonforge.toml")
+  write_text_file(
+    config_path,
+    [
+      "[tasks.generate]", "cmd = 'python -c \"from pathlib import Path; Path(r\\\"dist\\\").mkdir(parents=True, exist_ok=True); Path(r\\\"dist/source.txt\\\").write_text(\\\"ok\\\", encoding=\\\"utf-8\\\")\"'",
+      "outputs = [\"dist/source.txt\"]", "", "[tasks.bundle]", "cmd = 'python -c \"print(1)\"'",
+      "deps = [\"generate\"]", "inputs = [\"dist/source.txt\"]", "outputs = [\"dist/bundle.txt\"]",
+      "",
+    ].join("\n"),
+  )
+  let project = load_project(root~, config_path~)
+  let findings = doctor(project)
+  assert_true(
+    !findings.join("\n").contains("declares missing input 'dist/source.txt'"),
+  )
+}

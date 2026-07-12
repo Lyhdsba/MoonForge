@@ -63,6 +63,17 @@ async fn main {
         println(line)
       }
     }
+    Stats(config_path~) => {
+      let project = @moonforge.load_project(config_path~) catch {
+        err => fatal("error: \{@debug.to_string(err)}")
+      }
+      let lines = @moonforge.render_project_stats(project) catch {
+        err => fatal("error: \{@debug.to_string(err)}")
+      }
+      for line in lines {
+        println(line)
+      }
+    }
     Clean(config_path~) => {
       let project = @moonforge.load_project(config_path~) catch {
         err => fatal("error: \{@debug.to_string(err)}")

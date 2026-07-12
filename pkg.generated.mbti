@@ -31,9 +31,13 @@ pub fn parse_cli(Array[String]) -> CliCommand raise MoonforgeError
 
 pub fn plan_for_task(Array[TaskPlan], String) -> TaskPlan?
 
+pub fn project_stats(Project) -> ProjectStats raise MoonforgeError
+
 pub fn reason_message(PlanReason) -> String
 
 pub fn render_graph(Project, String?) -> Array[String] raise MoonforgeError
+
+pub fn render_project_stats(Project) -> Array[String] raise MoonforgeError
 
 pub async fn run_target(Project, String?, jobs? : Int) -> RunSummary raise MoonforgeError
 
@@ -68,6 +72,7 @@ pub(all) enum CliCommand {
   List(config_path~ : String)
   Graph(config_path~ : String, target~ : String?)
   Explain(config_path~ : String, target~ : String?)
+  Stats(config_path~ : String)
   Clean(config_path~ : String)
   Doctor(config_path~ : String)
   Run(config_path~ : String, target~ : String?, jobs~ : Int)
@@ -87,6 +92,24 @@ pub struct Project {
   root : String
   config_path : String
   tasks : Map[String, Task]
+} derive(@debug.Debug)
+
+pub struct ProjectStats {
+  default_target : String
+  total_tasks : Int
+  root_tasks : Int
+  leaf_tasks : Int
+  phony_tasks : Int
+  concrete_tasks : Int
+  tasks_with_inputs : Int
+  tasks_with_outputs : Int
+  total_declared_inputs : Int
+  total_declared_outputs : Int
+  max_depth : Int
+  duplicate_outputs : Int
+  overlapping_outputs : Int
+  missing_inputs : Int
+  unreachable_tasks : Int
 } derive(@debug.Debug)
 
 pub struct RunSummary {

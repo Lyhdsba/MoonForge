@@ -63,6 +63,25 @@ pub struct RunSummary {
 } derive(@debug.Debug)
 
 ///|
+pub struct ProjectStats {
+  default_target : String
+  total_tasks : Int
+  root_tasks : Int
+  leaf_tasks : Int
+  phony_tasks : Int
+  concrete_tasks : Int
+  tasks_with_inputs : Int
+  tasks_with_outputs : Int
+  total_declared_inputs : Int
+  total_declared_outputs : Int
+  max_depth : Int
+  duplicate_outputs : Int
+  overlapping_outputs : Int
+  missing_inputs : Int
+  unreachable_tasks : Int
+} derive(@debug.Debug)
+
+///|
 pub fn empty_cache() -> CacheSnapshot {
   { version: 1, tasks: {} }
 }

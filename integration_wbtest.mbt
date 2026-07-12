@@ -36,8 +36,9 @@ fn write_fixture_scripts(root : String) -> Unit raise MoonforgeError {
 
 ///|
 fn sample_config_text(root : String) -> String {
-  let generate_script = join_path(root, "scripts/generate.py")
-  let bundle_script = join_path(root, "scripts/bundle.py")
+  ignore(root)
+  let generate_script = "scripts/generate.py"
+  let bundle_script = "scripts/bundle.py"
   [
     "[tasks.generate]",
     "cmd = '\{python_command(generate_script)}'",

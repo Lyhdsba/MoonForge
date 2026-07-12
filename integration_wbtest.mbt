@@ -12,25 +12,40 @@ fn reset_dir(path : String) -> Unit raise MoonforgeError {
 }
 
 ///|
-fn write_source_command() -> String {
-  "python -c \"from pathlib import Path; Path(r\\\"build\\\").mkdir(parents=True, exist_ok=True); Path(r\\\"build/source.txt\\\").write_text(\\\"alpha\\\", encoding=\\\"utf-8\\\")\""
+fn python_command(script_path : String) -> String {
+  "python \{script_path}"
 }
 
 ///|
-fn copy_bundle_command() -> String {
-  "python -c \"from pathlib import Path; Path(r\\\"build/bundle.txt\\\").write_text(Path(r\\\"build/source.txt\\\").read_text(encoding=\\\"utf-8\\\") + \\\"-bundle\\\", encoding=\\\"utf-8\\\")\""
+fn write_fixture_scripts(root : String) -> Unit raise MoonforgeError {
+  write_text_file(
+    join_path(root, "scripts/generate.py"),
+    [
+      "from pathlib import Path", "", "Path('build').mkdir(parents=True, exist_ok=True)",
+      "Path('build/source.txt').write_text('alpha', encoding='utf-8')", "",
+    ].join("\n"),
+  )
+  write_text_file(
+    join_path(root, "scripts/bundle.py"),
+    [
+      "from pathlib import Path", "", "Path('build/bundle.txt').write_text(", "    Path('build/source.txt').read_text(encoding='utf-8') + '-bundle',",
+      "    encoding='utf-8',", ")", "",
+    ].join("\n"),
+  )
 }
 
 ///|
-fn sample_config_text() -> String {
+fn sample_config_text(root : String) -> String {
+  let generate_script = join_path(root, "scripts/generate.py")
+  let bundle_script = join_path(root, "scripts/bundle.py")
   [
     "[tasks.generate]",
-    "cmd = '\{write_source_command()}'",
+    "cmd = '\{python_command(generate_script)}'",
     "outputs = [\"build/source.txt\"]",
     "desc = \"generate a source file\"",
     "",
     "[tasks.bundle]",
-    "cmd = '\{copy_bundle_command()}'",
+    "cmd = '\{python_command(bundle_script)}'",
     "deps = [\"generate\"]",
     "inputs = [\"build/source.txt\"]",
     "outputs = [\"build/bundle.txt\"]",
@@ -46,7 +61,9 @@ fn sample_config_text() -> String {
 
 ///|
 fn write_config(path : String) -> Unit raise MoonforgeError {
-  write_text_file(path, sample_config_text())
+  let root = dirname_string(path)
+  write_fixture_scripts(root)
+  write_text_file(path, sample_config_text(root))
 }
 
 ///|

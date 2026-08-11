@@ -34,7 +34,7 @@ test "wide fanout keeps independent leaves in one dependency level" {
   let levels = task_levels(project, order)
   assert_eq(levels.length(), 2)
   assert_eq(levels[0].length(), spec.task_count - 1)
-  assert_eq(levels[1], ["build"])
+  assert_true(levels[1] == ["build"])
 }
 
 ///|
@@ -52,6 +52,6 @@ test "benchmark project names are stable across repeated generation" {
   for spec in benchmark_specs() {
     let left = list_tasks(build_benchmark_project(spec))
     let right = list_tasks(build_benchmark_project(spec))
-    assert_eq(left, right)
+    assert_true(left == right)
   }
 }

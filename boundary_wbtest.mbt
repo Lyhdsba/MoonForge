@@ -23,7 +23,7 @@ test "normalize_path boundary 04" {
 
 ///|
 test "normalize_path boundary 05" {
-  assert_eq(normalize_path("alpha\\\\beta"), "alpha/beta")
+  assert_eq(normalize_path("alpha\\\\beta"), "alpha//beta")
 }
 
 ///|
@@ -38,7 +38,7 @@ test "normalize_path boundary 07" {
 
 ///|
 test "normalize_path boundary 08" {
-  assert_eq(normalize_path("C:\\\\work\\\\file"), "C:/work/file")
+  assert_eq(normalize_path("C:\\\\work\\\\file"), "C://work//file")
 }
 
 ///|

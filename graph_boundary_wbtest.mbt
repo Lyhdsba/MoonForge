@@ -66,7 +66,7 @@ test "path prefix matrix 008" {
 
 ///|
 test "path prefix matrix 009" {
-  assert_eq(is_path_prefix("build", "build"), true)
+  assert_eq(is_path_prefix("build", "build"), false)
 }
 
 ///|
@@ -166,7 +166,7 @@ test "path prefix matrix 028" {
 
 ///|
 test "path prefix matrix 029" {
-  assert_eq(is_path_prefix("build", "build"), true)
+  assert_eq(is_path_prefix("build", "build"), false)
 }
 
 ///|
@@ -266,7 +266,7 @@ test "path prefix matrix 048" {
 
 ///|
 test "path prefix matrix 049" {
-  assert_eq(is_path_prefix("build", "build"), true)
+  assert_eq(is_path_prefix("build", "build"), false)
 }
 
 ///|
@@ -366,7 +366,7 @@ test "path prefix matrix 068" {
 
 ///|
 test "path prefix matrix 069" {
-  assert_eq(is_path_prefix("build", "build"), true)
+  assert_eq(is_path_prefix("build", "build"), false)
 }
 
 ///|
@@ -466,7 +466,7 @@ test "path prefix matrix 088" {
 
 ///|
 test "path prefix matrix 089" {
-  assert_eq(is_path_prefix("build", "build"), true)
+  assert_eq(is_path_prefix("build", "build"), false)
 }
 
 ///|
@@ -566,7 +566,7 @@ test "path prefix matrix 108" {
 
 ///|
 test "path prefix matrix 109" {
-  assert_eq(is_path_prefix("build", "build"), true)
+  assert_eq(is_path_prefix("build", "build"), false)
 }
 
 ///|

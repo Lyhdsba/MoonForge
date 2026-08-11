@@ -30,8 +30,8 @@
 ## Publish State
 
 - Module identity: `Lyhdsba/moonforge`
-- Mooncakes publication: `0.1.2` published successfully on 2026-08-11
-- Package API entry: `https://mooncakes.io/api/v0/modules/Lyhdsba/moonforge@0.1.2`
+- Mooncakes publication: `0.1.3` prepared after the final acceptance CI passed
+- Package API entry: `https://mooncakes.io/api/v0/modules/Lyhdsba/moonforge@0.1.3`
 - Public docs entry: `https://mooncakes.io/docs/Lyhdsba/moonforge`
 - Current release process: local strict checks -> dual-remote push -> `moon publish --dry-run` -> `moon publish`
 

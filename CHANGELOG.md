@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3 - 2026-08-11
+
+- Corrected the strict-toolchain boundary corpus for literal repeated
+  separators and descendant-only output prefix semantics.
+- Finalized the reproducible 0.10.3 CI matrix: strict formatting/checks,
+  generated interface verification, native build, 383 tests, CLI smoke, and
+  cold/warm benchmark workloads.
+
 ## 0.1.2 - 2026-08-11
 
 - Added structured `audit` findings, task duration/cache metrics, output

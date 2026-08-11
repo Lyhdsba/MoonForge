@@ -83,7 +83,7 @@ pub struct ProjectStats {
 
 ///|
 pub fn empty_cache() -> CacheSnapshot {
-  { version: 1, tasks: {} }
+  { version: 1, tasks: Map([]) }
 }
 
 ///|

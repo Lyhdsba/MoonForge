@@ -168,3 +168,44 @@ test "doctor allows dependency-produced inputs before execution" {
     !findings.join("\n").contains("declares missing input 'dist/source.txt'"),
   )
 }
+
+///|
+async test "run_target blocks dependent tasks after a failure" {
+  let root = fixture_dir("failure-blocking")
+  reset_dir(root)
+  write_text_file(
+    join_path(root, "scripts/fail.py"),
+    [
+      "from pathlib import Path", "Path('build').mkdir(parents=True, exist_ok=True)",
+      "Path('build/failure-started.txt').write_text('started', encoding='utf-8')",
+      "raise SystemExit(7)", "",
+    ].join("\n"),
+  )
+  write_text_file(
+    join_path(root, "scripts/dependent.py"),
+    [
+      "from pathlib import Path", "Path('build').mkdir(parents=True, exist_ok=True)",
+      "Path('build/dependent-ran.txt').write_text('ran', encoding='utf-8')", "",
+    ].join("\n"),
+  )
+  let config_path = join_path(root, "Moonforge.toml")
+  write_text_file(
+    config_path,
+    [
+      "[tasks.fail]", "cmd = 'python scripts/fail.py'", "outputs = [\"build/failure-started.txt\"]",
+      "", "[tasks.dependent]", "cmd = 'python scripts/dependent.py'", "deps = [\"fail\"]",
+      "inputs = [\"build/failure-started.txt\"]", "outputs = [\"build/dependent-ran.txt\"]",
+      "",
+    ].join("\n"),
+  )
+  let project = load_project(root~, config_path~)
+  let dependent_output = join_path(root, "build/dependent-ran.txt")
+  try run_target(project, Some("dependent")) catch {
+    err => {
+      assert_true(!@fs.path_exists(dependent_output))
+      assert_true(@debug.to_string(err).contains("fail"))
+    }
+  } noraise {
+    _ => fail("expected run_target to reject the failed dependency")
+  }
+}

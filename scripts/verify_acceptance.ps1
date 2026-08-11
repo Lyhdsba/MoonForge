@@ -87,12 +87,19 @@ $moonModText = Get-Content "moon.mod" -Raw -Encoding UTF8
 Assert-True ($moonModText.Contains('name = "Lyhdsba/moonforge"')) "moon.mod must use the Mooncakes account identity."
 
 moon version --all | Out-Null
+moon update | Out-Null
+moon fmt --check | Out-Null
 moon check --fmt --deny-warn --target native | Out-Null
 moon info | Out-Null
 $firstDigest = Get-InterfaceDigest
 moon info | Out-Null
 $secondDigest = Get-InterfaceDigest
 Assert-True ($firstDigest -eq $secondDigest) "moon info output is not stable across consecutive runs."
+if (Test-NativeCompiler) {
+  moon build --deny-warn --target native | Out-Null
+} else {
+  Write-Host "native build: skipped (no system C compiler found)"
+}
 moon check --deny-warn --target native | Out-Null
 
 $commitCount = git rev-list --count HEAD

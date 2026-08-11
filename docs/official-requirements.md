@@ -1,6 +1,6 @@
 # OSC2026 Official Requirements Snapshot
 
-Checked on 2026-07-12 against:
+Checked on 2026-08-11 against:
 
 - https://moonbitlang.github.io/OSC2026/
 - https://www.gitlink.org.cn/competitions/track1_2026MoonBit
@@ -13,8 +13,12 @@ Key current points reflected in this repository:
 - The repository should be public and provide a clear README.
 - The project should provide runnable examples, CI, tests, and a Mooncakes publication entry.
 - The project must use an OSI-approved open-source license.
+- The acceptance feedback specifically asks for a reproducible README installation flow, a compatible toolchain constraint, explicit build/test/format/interface checks, failure blocking, input-change coverage, and parallel scheduling coverage in CI.
 - If the project references or ports existing open-source work, the upstream project, link, license, and adaptation scope should be documented clearly.
 - The reference source-scale guidance is not a hard rule by itself; reviewers care more about real usability, clear boundaries, documentation completeness, runnable validation, and maintainability.
 
 MoonForge uses this file as a freshness-checked repository-local snapshot rather
-than treating older acceptance notes as permanent truth.
+than treating older acceptance notes as permanent truth. The current workflow
+uses MoonBit 0.10.3 revision `0.10.3+16975d007`; `moon fmt --check` and
+`moon info` are the supported strict equivalents because MoonBit 0.10.x does
+not expose `--deny-warn` for those two subcommands.

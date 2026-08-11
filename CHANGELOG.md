@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.2 - 2026-08-11
+
+- Repaired README and proposal UTF-8 text and documented a reproducible
+  MoonBit 0.10.3 installation and acceptance flow.
+- Added explicit format, interface-generation, native build, test, and CLI
+  checks to the cross-platform CI and local acceptance script.
+- Updated the async dependency to `0.20.3` so the project remains compatible
+  with the current MoonBit compiler while CI remains pinned to the acceptance
+  toolchain.
+- Recorded the pre-acceptance feedback about failure blocking, input changes,
+  and dependency-level parallel scheduling.
+
 ## 2026-07-12
 
 - Added `moonforge stats` for reviewer-facing repository diagnostics

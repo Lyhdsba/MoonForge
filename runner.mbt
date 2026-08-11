@@ -7,7 +7,7 @@ pub async fn run_target(
   validate_project(project)
   let cache = load_cache(project)
   let (_order, levels, plans) = make_plan(project, cache, target)
-  let plan_map : Map[String, TaskPlan] = {}
+  let plan_map : Map[String, TaskPlan] = Map([])
   for plan in plans {
     plan_map[plan.task.name] = plan
   }

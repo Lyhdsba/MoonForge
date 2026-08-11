@@ -6,7 +6,7 @@ pub fn make_plan(
 ) -> (Array[String], Array[Array[String]], Array[TaskPlan]) raise MoonforgeError {
   let order = task_order(project, target)
   let levels = task_levels(project, order)
-  let plan_map : Map[String, TaskPlan] = {}
+  let plan_map : Map[String, TaskPlan] = Map([])
   let plans = []
   for name in order {
     let task = get_task(project, name)

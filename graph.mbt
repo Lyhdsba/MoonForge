@@ -23,7 +23,7 @@ pub fn task_order(
     raise MissingTask("unknown task '\{target_name}'")
   }
   let order = []
-  let states : Map[String, VisitState] = {}
+  let states : Map[String, VisitState] = Map([])
   let stack = []
   dfs_task(project, target_name, states, order, stack)
   order
@@ -65,7 +65,7 @@ pub fn task_levels(
   project : Project,
   order : Array[String],
 ) -> Array[Array[String]] raise MoonforgeError {
-  let levels : Map[String, Int] = {}
+  let levels : Map[String, Int] = Map([])
   let max_level = Ref(0)
   for name in order {
     let task = get_task(project, name)
@@ -94,7 +94,7 @@ pub fn task_levels(
 
 ///|
 pub fn duplicate_outputs(project : Project) -> Array[(String, String, String)] {
-  let seen : Map[String, String] = {}
+  let seen : Map[String, String] = Map([])
   let duplicates = []
   for task_name, task in project.tasks {
     for output in task.outputs {

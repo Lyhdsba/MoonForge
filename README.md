@@ -2,59 +2,82 @@
 
 MoonForge is a MoonBit-native incremental task runner for small builds, code
 generation pipelines, document workflows, asset preparation, and reproducible
-local CI commands. It focuses on making MoonBit project automation explicit,
-incremental, inspectable, and easier to review in public open-source delivery.
+local CI commands. It makes task dependencies, inputs, outputs, caching, and
+failure reasons explicit.
 
-## 项目定位
+## Project status
 
-MoonForge 面向 MoonBit 项目和通用本地工程，提供一个轻量、可解释、可扩展
-的声明式任务编排工具。它重点解决四类常见问题：
+MoonForge is an OSC2026 engineering-infrastructure project. The current
+release focuses on a dependable native CLI, deterministic dependency planning,
+incremental execution, diagnostics, and a small configuration format that is
+easy to review and extend.
 
-- 把零散脚本收拢到统一配置文件中
-- 显式声明任务依赖、输入、输出和执行命令
-- 根据输入变化、输出缺失和依赖状态做增量判断
-- 在失败时及时阻断下游，方便本地复现和排查
+## Install MoonBit
 
-这个方向对应 MoonBit OSC2026 官方推荐的工程基础设施与工具链赛道，
-也适合继续扩展到代码生成、文档流水线、资源构建和本地 CI 复现。
-
-## 当前能力
-
-- 声明式配置文件 `Moonforge.toml`
-- 任务 DAG 建图、环检测、缺失依赖检查
-- 基于命令、输入、输出和依赖状态的增量执行
-- 本地缓存目录 `.moonforge/cache.json`
-- `run`、`list`、`graph`、`explain`、`stats`、`clean`、`doctor` CLI
-- 按依赖层级分批并行调度，支持 `-j N`
-- `stats` 提供任务数量、默认目标、依赖深度、输入输出规模与可达性摘要
-- `doctor` 除重复输出检查外，还会检查输出重叠、缺失输入与默认目标不可达任务
-
-## 快速开始
+Use the MoonBit 0.10.3 toolchain for the competition acceptance environment.
+The official installers are:
 
 ```bash
-moon check
-moon run --target native cmd/main -- list
-moon run --target native cmd/main -- graph build
-moon run --target native cmd/main -- explain build
+# Linux or macOS
+curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+```
+
+```powershell
+# Windows PowerShell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+```
+
+Restart the terminal if `moon` is not on `PATH`, then verify the toolchain:
+
+```bash
+moon version --all
+moon update
+```
+
+The GitHub Actions workflow pins the complete 0.10.3 toolchain revision so
+that CI and the acceptance environment use the same compiler and formatter.
+
+## Quick start
+
+From the repository root:
+
+```bash
+moon update
+moon check --fmt --deny-warn --target native
+moon fmt --check
+moon info
+moon build --deny-warn --target native
+moon test --deny-warn --target native
 moon run --target native cmd/main -- stats
 moon run --target native cmd/main -- run build
 ```
 
-仓库内置了一个 `Moonforge.toml` 示例，覆盖文档转换、资源复制和聚合伪任务等
-典型场景。
+`moon fmt` and `moon info` do not accept `--deny-warn` in the MoonBit 0.10.x
+CLI. `moon fmt --check` is the strict formatting gate; `moon check --fmt
+--deny-warn` combines formatting and warning-free compilation; `moon info`
+regenerates the public interfaces and CI verifies that they are stable.
 
-## 配置格式
+For a complete OSC2026-style local check, run:
 
-顶层使用 `tasks` 表。每个任务支持以下字段：
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\verify_acceptance.ps1
+```
 
-- `cmd`: 要执行的命令
-- `deps`: 依赖任务名列表
-- `inputs`: 输入文件或目录列表
-- `outputs`: 输出文件列表
-- `phony`: 是否为伪任务
-- `desc`: 任务描述
+## Configuration
 
-示例：
+MoonForge reads `Moonforge.toml`. Each task is declared under `[tasks.NAME]`:
+
+| Field | Meaning |
+| --- | --- |
+| `cmd` | Command to execute |
+| `deps` | Tasks that must finish first |
+| `inputs` | Files or directories used by the task |
+| `outputs` | Files or directories produced by the task |
+| `phony` | Whether the task is always considered runnable |
+| `desc` | Human-readable task description |
+
+Example:
 
 ```toml
 [tasks.bundle]
@@ -66,7 +89,9 @@ phony = false
 desc = "Build the bundle"
 ```
 
-如果任务没有声明输出，MoonForge 会把它当作“等效伪任务”处理。
+Tasks without declared outputs are treated as effectively phony. The sample
+configuration in this repository demonstrates documentation, asset, and
+aggregate build tasks.
 
 ## CLI
 
@@ -80,41 +105,41 @@ moonforge doctor [--file PATH]
 moonforge run [TASK] [--file PATH] [-j N]
 ```
 
-如果没有显式指定目标任务，MoonForge 会按 `build`、`default`、字母序第一个任务
-的优先级选择默认入口。
+`run` plans tasks in dependency order, skips up-to-date tasks using input and
+output fingerprints, and blocks dependent work after a failure. `-j N` enables
+bounded parallel execution within a dependency level. `doctor` reports cycles,
+duplicate or overlapping outputs, missing inputs, empty commands, and tasks
+that cannot be reached from the default target. `stats` summarizes graph depth,
+task classes, declared inputs/outputs, and reachability.
 
-## 示例场景
+## Repository layout
 
-- 文档流水线：Markdown 转 HTML 或预览产物
-- 代码生成：schema 输入、生成代码、再触发测试
-- 资源处理：复制、整理、分发静态资源
-- 本地 CI：统一执行 `fmt`、`check`、`test`、构建步骤
+- `*.mbt`: MoonForge library and test implementation.
+- `cmd/main`: native CLI entry point.
+- `Moonforge.toml`: runnable sample project configuration.
+- `docs/`: design, acceptance, release, and competition notes.
+- `scripts/verify_acceptance.ps1`: reproducible local acceptance gate.
+- `.github/workflows/ci.yml`: pinned cross-platform checks.
 
-## 设计边界
+## Development
 
-- 当前执行后端以 `native` 为主，因为命令执行依赖 `trkbt10/subprocess`
-- v1 并行模型采用按依赖层级分批调度，优先保证稳定和可解释
-- 当前不包含远程缓存、分布式执行、沙箱隔离和自定义 DSL
+Please read [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests should include
+tests for behavior changes and should leave these commands clean:
 
-## 仓库与文档
+```bash
+moon fmt --check
+moon check --fmt --deny-warn --target native
+moon info
+git diff --exit-code -- pkg.generated.mbti cmd/main/pkg.generated.mbti
+moon test --deny-warn --target native
+```
+
+## Links and license
 
 - GitHub: <https://github.com/Lyhdsba/MoonForge>
 - GitLink: <https://gitlink.org.cn/Lyhdsba/MoonForge>
 - Mooncakes: <https://mooncakes.io/docs/Lyhdsba/moonforge>
-- 申报 PDF: `output/pdf/MoonForge-OSC2026-Proposal.pdf`
-- 设计说明: `docs/design.md`
-- 结项自检: `docs/acceptance-checklist.md`
-- 官方要求摘录: `docs/official-requirements.md`
-- 开源来源说明: `docs/source-attribution.md`
+- Proposal: [proposal/one-page-proposal.md](proposal/one-page-proposal.md)
+- Acceptance checklist: [docs/acceptance-checklist.md](docs/acceptance-checklist.md)
 
-## 结项自检
-
-仓库提供了结项检查脚本：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\verify_acceptance.ps1
-```
-
-脚本会检查 README 文件形态、仓库材料完整性、远程默认分支、提交历史、MoonBit
-源码规模、一页 PDF、模块身份一致性，以及在具备本地 C 编译器时补跑严格模式
-测试和 CLI 烟雾验证。
+MoonForge is released under the [Apache License 2.0](LICENSE).

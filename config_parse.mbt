@@ -28,7 +28,7 @@ fn parse_tasks(
   guard tasks_value is Some(@toml.TomlTable(tasks_table)) else {
     config_error("Moonforge config must define a [tasks] table")
   }
-  let tasks : Map[String, Task] = {}
+  let tasks : Map[String, Task] = Map([])
   for name, task_value in tasks_table {
     tasks[name] = parse_task(name, task_value)
   }

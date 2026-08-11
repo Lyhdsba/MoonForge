@@ -29,8 +29,10 @@ pre-acceptance hardening items applied to MoonForge.
 
 ## Verification
 
+- `moon fmt --check` passes
 - `moon check --fmt --deny-warn --target native` passes
 - `moon info` regenerates no unexpected public-interface changes
+- `moon build --deny-warn --target native` passes
 - `moon check --deny-warn --target native` passes
 - `powershell -ExecutionPolicy Bypass -File scripts\verify_acceptance.ps1` passes
 - If a native C compiler is available, `moon test --deny-warn --target native` and CLI smoke checks pass

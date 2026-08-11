@@ -11,7 +11,7 @@
 
 name = "Lyhdsba/moonforge"
 
-version = "0.1.1"
+version = "0.1.2"
 
 readme = "README.md"
 
@@ -26,7 +26,7 @@ description = "A MoonBit-native incremental task runner for small builds, codege
 preferred_target = "native"
 
 import {
-  "moonbitlang/async@0.16.8",
+  "moonbitlang/async@0.20.3",
   "moonbitlang/x@0.4.46",
   "bobzhang/toml@0.4.1",
   "trkbt10/subprocess@0.2.0",

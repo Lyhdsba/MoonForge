@@ -216,7 +216,7 @@ pub fn clean_project(project : Project) -> Array[String] raise MoonforgeError {
 
 ///|
 fn reverse_dependency_map(project : Project) -> Map[String, Array[String]] {
-  let reverse : Map[String, Array[String]] = {}
+  let reverse : Map[String, Array[String]] = Map([])
   for name in project.tasks.keys() {
     reverse[name] = []
   }
@@ -299,7 +299,7 @@ fn declared_outputs_from_dependencies(
   task_name : String,
 ) -> Array[String] raise MoonforgeError {
   let outputs = []
-  let seen : Map[String, Bool] = {}
+  let seen : Map[String, Bool] = Map([])
   collect_dependency_outputs(project, task_name, seen, outputs)
   outputs
 }

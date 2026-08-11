@@ -1,27 +1,28 @@
 # MoonForge
 
 MoonForge is a MoonBit-native incremental task runner for small builds, code
-generation pipelines, document workflows, and reproducible local CI commands.
+generation pipelines, document workflows, asset preparation, and local CI.
 
 ## Highlights
 
-- Declarative `Moonforge.toml`
-- DAG validation and cycle detection
-- Input/output fingerprinting with `.moonforge/cache.json`
-- `run`, `list`, `graph`, `explain`, `clean`, and `doctor` commands
-- Batch parallel execution by dependency level with `-j N`
+- Declarative `Moonforge.toml` task configuration.
+- Dependency graph validation and cycle detection.
+- Input/output fingerprinting with `.moonforge/cache.json`.
+- `run`, `list`, `graph`, `explain`, `stats`, `clean`, and `doctor` commands.
+- Bounded parallel execution by dependency level with `-j N`.
 
-## Quick Start
+## Quick start
 
 ```mbt nocheck
-moon check
-moon run --target native cmd/main -- list
-moon run --target native cmd/main -- graph build
-moon run --target native cmd/main -- explain build
-moon run --target native cmd/main -- run build
+moon update
+moon check --fmt --deny-warn --target native
+moon fmt --check
+moon info
+moon test --deny-warn --target native
+moon run --target native cmd/main -- stats
 ```
 
-## Config Example
+## Configuration example
 
 ```toml
 [tasks.bundle]
@@ -33,15 +34,7 @@ phony = false
 desc = "Build the bundle"
 ```
 
-Supported task fields:
-
-- `cmd`
-- `deps`
-- `inputs`
-- `outputs`
-- `phony`
-- `desc`
-
+Supported fields are `cmd`, `deps`, `inputs`, `outputs`, `phony`, and `desc`.
 Tasks without outputs are treated as effectively phony.
 
 ## CLI
@@ -50,6 +43,7 @@ Tasks without outputs are treated as effectively phony.
 moonforge list [--file PATH]
 moonforge graph [TASK] [--file PATH]
 moonforge explain [TASK] [--file PATH]
+moonforge stats [--file PATH]
 moonforge clean [--file PATH]
 moonforge doctor [--file PATH]
 moonforge run [TASK] [--file PATH] [-j N]

@@ -1,5 +1,9 @@
 ///|
-fn matrix_task(name : String, deps : Array[String], outputs : Array[String]) -> Task {
+fn matrix_task(
+  name : String,
+  deps : Array[String],
+  outputs : Array[String],
+) -> Task {
   {
     name,
     cmd: "echo matrix",

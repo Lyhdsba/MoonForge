@@ -26,13 +26,13 @@ Path(output).write_text(f"{name}\n", encoding="utf-8")
   $taskNames = @()
   $nonBuild = $TaskCount - 1
   for ($i = 0; $i -lt $nonBuild; $i++) {
-    if ($Shape -eq "fanout") { $name = "leaf-{0:d3}" -f $i }
-    elseif ($Shape -eq "mixed" -and $i -lt 6) { $name = "leaf-{0:d3}" -f $i }
-    else { $name = "step-{0:d3}" -f $i }
-    $taskNames += $name
-    $output = "benchmarks/generated/$Name/out/$name.txt"
-    $command = "python benchmarks/generated/$Name/write_task.py $name $output"
-    $lines += "[tasks.$name]"
+    if ($Shape -eq "fanout") { $taskName = "leaf-{0:d3}" -f $i }
+    elseif ($Shape -eq "mixed" -and $i -lt 6) { $taskName = "leaf-{0:d3}" -f $i }
+    else { $taskName = "step-{0:d3}" -f $i }
+    $taskNames += $taskName
+    $output = "benchmarks/generated/$Name/out/$taskName.txt"
+    $command = "python benchmarks/generated/$Name/write_task.py $taskName $output"
+    $lines += "[tasks.$taskName]"
     $lines += "cmd = '$command'"
     $lines += "outputs = ['$output']"
     if ($i -gt 0 -and $Shape -ne "fanout") {

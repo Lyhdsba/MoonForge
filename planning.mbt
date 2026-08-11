@@ -27,6 +27,8 @@ pub fn make_plan(
         Some(_) if !outputs_exist(project.root, task) => OutputMissing
         Some(entry) if entry.command_hash != command_hash => CommandChanged
         Some(entry) if entry.input_hash != input_hash => InputsChanged
+        Some(entry) if entry.output_hash !=
+          fingerprint_paths(project.root, task.outputs) => OutputsChanged
         Some(_) if !dependency_runs.is_empty() =>
           DependencyReran(dependency_runs)
         Some(_) => UpToDate

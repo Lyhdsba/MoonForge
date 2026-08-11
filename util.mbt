@@ -66,9 +66,13 @@ fn ensure_dir_all(path : String) -> Unit raise MoonforgeError {
 }
 
 ///|
-fn ensure_output_parents(outputs : Array[String]) -> Unit raise MoonforgeError {
+fn ensure_output_parents(
+  root : String,
+  outputs : Array[String],
+) -> Unit raise MoonforgeError {
   for output in outputs {
-    ensure_dir_all(dirname_string(output))
+    let resolved = resolve_project_path(root, output)
+    ensure_dir_all(dirname_string(resolved))
   }
 }
 

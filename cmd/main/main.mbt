@@ -74,6 +74,17 @@ async fn main {
         println(line)
       }
     }
+    Audit(config_path~) => {
+      let project = @moonforge.load_project(config_path~) catch {
+        err => fatal("error: \{@debug.to_string(err)}")
+      }
+      let lines = @moonforge.render_audit_report(project) catch {
+        err => fatal("error: \{@debug.to_string(err)}")
+      }
+      for line in lines {
+        println(line)
+      }
+    }
     Clean(config_path~) => {
       let project = @moonforge.load_project(config_path~) catch {
         err => fatal("error: \{@debug.to_string(err)}")
@@ -113,6 +124,9 @@ async fn main {
       println(
         "executed: \{summary.executed.length()}, skipped: \{summary.skipped.length()}",
       )
+      for line in @moonforge.render_run_metrics(summary) {
+        println(line)
+      }
     }
   }
 }

@@ -36,6 +36,7 @@ The planner reruns a task when:
 - a declared output is missing
 - the command changed
 - any input fingerprint changed
+- a declared output's content fingerprint changed
 - a dependency reran
 
 ## Execution Model
@@ -45,6 +46,16 @@ The planner reruns a task when:
 - Group tasks by dependency level.
 - Run each level in batches of at most `-j N`.
 - Stop the pipeline on the first command failure.
+
+## Review and benchmark surface
+
+The `audit` command exposes structured findings for duplicate outputs,
+overlapping output paths, missing inputs, empty commands, unreachable tasks,
+and phony tasks. The `run` command reports executed/skipped counts, cache-hit
+percentage, total/average duration, and the longest task. The benchmark script
+uses real CLI executions over small, mixed, wide, and deep dependency graphs;
+its wall-clock output is deliberately machine-specific while task counts and
+cold/warm cache behavior are stable signals.
 
 This is intentionally smaller than a full Ninja-style scheduler, but it keeps
 the behavior predictable and easier to debug.

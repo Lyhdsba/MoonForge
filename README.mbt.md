@@ -8,7 +8,7 @@ generation pipelines, document workflows, asset preparation, and local CI.
 - Declarative `Moonforge.toml` task configuration.
 - Dependency graph validation and cycle detection.
 - Input/output fingerprinting with `.moonforge/cache.json`.
-- `run`, `list`, `graph`, `explain`, `stats`, `clean`, and `doctor` commands.
+- `run`, `list`, `graph`, `explain`, `stats`, `audit`, `clean`, and `doctor` commands.
 - Bounded parallel execution by dependency level with `-j N`.
 
 ## Quick start
@@ -20,6 +20,7 @@ moon fmt --check
 moon info
 moon test --deny-warn --target native
 moon run --target native cmd/main -- stats
+moon run --target native cmd/main -- audit
 ```
 
 ## Configuration example
@@ -44,6 +45,7 @@ moonforge list [--file PATH]
 moonforge graph [TASK] [--file PATH]
 moonforge explain [TASK] [--file PATH]
 moonforge stats [--file PATH]
+moonforge audit [--file PATH]
 moonforge clean [--file PATH]
 moonforge doctor [--file PATH]
 moonforge run [TASK] [--file PATH] [-j N]

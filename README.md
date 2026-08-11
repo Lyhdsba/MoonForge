@@ -50,6 +50,7 @@ moon info
 moon build --deny-warn --target native
 moon test --deny-warn --target native
 moon run --target native cmd/main -- stats
+moon run --target native cmd/main -- audit
 moon run --target native cmd/main -- run build
 ```
 
@@ -100,6 +101,7 @@ moonforge list [--file PATH]
 moonforge graph [TASK] [--file PATH]
 moonforge explain [TASK] [--file PATH]
 moonforge stats [--file PATH]
+moonforge audit [--file PATH]
 moonforge clean [--file PATH]
 moonforge doctor [--file PATH]
 moonforge run [TASK] [--file PATH] [-j N]
@@ -110,7 +112,16 @@ output fingerprints, and blocks dependent work after a failure. `-j N` enables
 bounded parallel execution within a dependency level. `doctor` reports cycles,
 duplicate or overlapping outputs, missing inputs, empty commands, and tasks
 that cannot be reached from the default target. `stats` summarizes graph depth,
-task classes, declared inputs/outputs, and reachability.
+task classes, declared inputs/outputs, and reachability. `audit` presents the
+same review surface as structured severity, code, task, path, and message
+findings. Every executed run prints cache-hit and duration metrics.
+
+## Benchmarks
+
+The repository includes reproducible small-chain, medium-mixed, wide-fanout,
+and deep-chain workloads. Run them with
+`powershell -ExecutionPolicy Bypass -File scripts\run_benchmarks.ps1 -Jobs 4`;
+see [benchmarks/README.md](benchmarks/README.md) for the data contract.
 
 ## Repository layout
 

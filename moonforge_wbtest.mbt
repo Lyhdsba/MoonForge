@@ -119,3 +119,48 @@ test "project_stats summarizes the dependency graph" {
   assert_eq(stats.max_depth, 2)
   assert_eq(stats.phony_tasks, 1)
 }
+
+///|
+test "audit labels structured findings for duplicate outputs" {
+  let project : Project = {
+    root: ".",
+    config_path: "Moonforge.toml",
+    tasks: {
+      "build": {
+        name: "build",
+        cmd: "echo build",
+        deps: [],
+        inputs: [],
+        outputs: ["dist/out.txt"],
+        phony: false,
+        desc: None,
+      },
+      "copy": {
+        name: "copy",
+        cmd: "echo copy",
+        deps: [],
+        inputs: [],
+        outputs: ["dist/out.txt"],
+        phony: false,
+        desc: None,
+      },
+    },
+  }
+  let report = audit_project(project)
+  assert_eq(audit_status(report), "error")
+  assert_eq(audit_code_label(DuplicateOutput), "duplicate-output")
+  assert_true(
+    render_audit_report(project).join("\n").contains("duplicate-output"),
+  )
+}
+
+///|
+test "parse_cli accepts the reviewer audit command" {
+  let command = parse_cli(["audit", "--file", "custom.toml"])
+  debug_inspect(
+    command,
+    content=(
+      #|Audit(config_path="custom.toml")
+    ),
+  )
+}

@@ -106,3 +106,20 @@ Run the prepublish checks, confirm `moon.mod` package identity/version and gener
 - [ ] **Step 4: Run the final OSC2026 self-check**
 
 Run `powershell -ExecutionPolicy Bypass -File scripts/verify_acceptance.ps1`, inspect `git status --short --branch`, and re-check README, license, history, default branches, source line count, CI files, and remote parity before reporting completion.
+## Final-acceptance hardening pass
+
+The official OSC2026 site currently describes a reference range of 4k–10k
+effective MoonBit lines and emphasizes usable, tested, maintainable projects.
+This pass therefore adds real diagnostic APIs, benchmark fixtures, and edge
+tests instead of inflating documentation-only counts.
+
+1. Add regression tests for tampered outputs, project-root-relative config, and
+   cleanup; implement output-hash invalidation and root-safe path handling.
+2. Add structured project findings and a reviewer-facing audit command while
+   preserving the existing `doctor` output.
+3. Add reproducible benchmark fixtures, runner scripts, recorded data, and
+   boundary tests for empty, wide, deep, cyclic, duplicate-output, and changed
+   input/output graphs.
+4. Refresh README, acceptance checklist, design notes, and release metadata.
+5. Run the exact pinned CI, inspect generated interfaces, push both remotes,
+   publish a new Mooncakes version, and verify registry metadata.

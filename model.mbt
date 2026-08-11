@@ -28,6 +28,7 @@ pub(all) enum PlanReason {
   CommandChanged
   InputsChanged
   OutputMissing
+  OutputsChanged
   DependencyReran(Array[String])
   UpToDate
 } derive(Eq, @debug.Debug)
@@ -60,6 +61,7 @@ pub struct RunSummary {
   plans : Array[TaskPlan]
   executed : Array[String]
   skipped : Array[String]
+  durations_ms : Map[String, Int]
 } derive(@debug.Debug)
 
 ///|
@@ -94,6 +96,7 @@ pub fn reason_message(reason : PlanReason) -> String {
     CommandChanged => "command changed"
     InputsChanged => "inputs changed"
     OutputMissing => "output missing"
+    OutputsChanged => "outputs changed"
     DependencyReran(names) => {
       let joined = join_strings(names, ", ")
       "dependency reran: \{joined}"

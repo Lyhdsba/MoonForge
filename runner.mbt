@@ -13,6 +13,7 @@ pub async fn run_target(
   }
   let executed = []
   let skipped = []
+  let durations_ms : Map[String, Int] = Map([])
   let new_cache = { version: cache.version, tasks: cache.tasks }
   let jobs = if jobs <= 0 { 1 } else { jobs }
   for level in levels {
@@ -37,6 +38,7 @@ pub async fn run_target(
             err => execution_error(@debug.to_string(err))
           }
           executed.push(task_name)
+          durations_ms[task_name] = entry.duration_ms
           new_cache.tasks[task_name] = entry
         }
         group.return_immediately(())
@@ -46,7 +48,7 @@ pub async fn run_target(
     }
   }
   save_cache(project, new_cache)
-  { plans, executed, skipped }
+  { plans, executed, skipped, durations_ms }
 }
 
 ///|
@@ -54,7 +56,7 @@ async fn run_one(
   project : Project,
   plan : TaskPlan,
 ) -> CacheEntry raise MoonforgeError {
-  ensure_output_parents(plan.task.outputs)
+  ensure_output_parents(project.root, plan.task.outputs)
   let started = @bench.monotonic_clock_start()
   let result = @subprocess.exec(plan.task.cmd, cwd=project.root, check=true) catch {
     @subprocess.CommandFailed(result) =>

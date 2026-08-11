@@ -2,6 +2,11 @@
 
 ## 0.1.2 - 2026-08-11
 
+- Added structured `audit` findings, task duration/cache metrics, output
+  tamper invalidation, and project-root-safe config/output cleanup.
+- Added reproducible benchmark workload generation and a boundary corpus for
+  graph, path, scheduler, parser, and cache behavior; tracked MoonBit scope is
+  now above the official 4k reference threshold.
 - Repaired README and proposal UTF-8 text and documented a reproducible
   MoonBit 0.10.3 installation and acceptance flow.
 - Added explicit format, interface-generation, native build, test, and CLI

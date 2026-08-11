@@ -189,8 +189,9 @@ pub fn clean_project(project : Project) -> Array[String] raise MoonforgeError {
   for name, task in project.tasks {
     ignore(name)
     for output in task.outputs {
-      if @fs.path_exists(output) {
-        remove_path_recursive(output)
+      let resolved = resolve_project_path(project.root, output)
+      if @fs.path_exists(resolved) {
+        remove_path_recursive(resolved)
         removed.push(output)
       }
     }

@@ -57,7 +57,9 @@ $requiredFiles = @(
   "docs/official-requirements.md",
   "docs/source-attribution.md",
   "docs/acceptance-checklist.md",
-  "proposal/one-page-proposal.md"
+  "proposal/one-page-proposal.md",
+  "benchmarks/README.md",
+  "scripts/run_benchmarks.ps1"
 )
 
 foreach ($path in $requiredFiles) {
@@ -71,6 +73,7 @@ $readmeText = Get-Content "README.md" -Raw -Encoding UTF8
 Assert-True (-not ($readmeText -match "\]\(/")) "README.md contains an absolute local Markdown link."
 Assert-True ($readmeText.Contains("MoonForge")) "README.md must mention the project name."
 Assert-True ($readmeText.Contains("moonforge stats")) "README.md must document the stats command."
+Assert-True ($readmeText.Contains("moonforge audit")) "README.md must document the audit command."
 
 $python = Resolve-Python
 
@@ -107,7 +110,7 @@ $commitCountInt = [int]$commitCount
 Assert-True ($commitCountInt -ge 15) "Commit history should show sustained public development."
 
 $moonBitLines = [int](& $python scripts/count_moonbit_lines.py)
-Assert-True ($moonBitLines -ge 1600) "Tracked MoonBit source should stay above the expanded acceptance baseline."
+Assert-True ($moonBitLines -ge 4000) "Tracked MoonBit source should meet the OSC2026 reference scope of at least 4k effective lines."
 
 $originHead = [string](git ls-remote --symref origin HEAD)
 Assert-True (($originHead -match "refs/heads/main")) "GitHub remote default branch must be main."

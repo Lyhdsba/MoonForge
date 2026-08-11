@@ -5,6 +5,7 @@ pub(all) enum CliCommand {
   Graph(config_path~ : String, target~ : String?)
   Explain(config_path~ : String, target~ : String?)
   Stats(config_path~ : String)
+  Audit(config_path~ : String)
   Clean(config_path~ : String)
   Doctor(config_path~ : String)
   Run(config_path~ : String, target~ : String?, jobs~ : Int)
@@ -20,6 +21,7 @@ pub fn help_text() -> String {
     #|  moonforge graph [TASK] [--file PATH]
     #|  moonforge explain [TASK] [--file PATH]
     #|  moonforge stats [--file PATH]
+    #|  moonforge audit [--file PATH]
     #|  moonforge clean [--file PATH]
     #|  moonforge doctor [--file PATH]
     #|  moonforge run [TASK] [--file PATH] [-j N]
@@ -61,6 +63,13 @@ pub fn parse_cli(args : Array[String]) -> CliCommand raise MoonforgeError {
           config_error("stats does not accept a target argument")
         }
         Stats(config_path~)
+      }
+      "audit" => {
+        let (config_path, _jobs, target) = parse_common_args(rest)
+        if target is Some(_) {
+          config_error("audit does not accept a target argument")
+        }
+        Audit(config_path~)
       }
       "clean" => {
         let (config_path, _jobs, target) = parse_common_args(rest)

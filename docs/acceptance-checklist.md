@@ -19,6 +19,9 @@ pre-acceptance hardening items applied to MoonForge.
 - Example configuration is included
 - CLI commands, constraints, roadmap, and source-attribution boundaries are documented
 - `moonforge stats` and `moonforge doctor` both expose reviewer-friendly repository diagnostics
+- `moonforge audit` exposes structured severity/code/path findings for review
+- Reproducible benchmark workloads cover small, mixed, wide, and deep graphs
+- Effective tracked MoonBit source is at least 4k lines, consistent with the official reference scope
 
 ## Proposal Materials
 

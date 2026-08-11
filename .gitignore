@@ -7,3 +7,5 @@ target
 .moonforge/
 .codex_tmp/
 tmp/
+benchmarks/generated/
+benchmarks/results/latest.csv

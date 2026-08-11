@@ -4,7 +4,7 @@ pub fn load_project(
   config_path? : String = "Moonforge.toml",
 ) -> Project raise MoonforgeError {
   let root = normalize_path(root)
-  let config_path = normalize_path(config_path)
+  let config_path = resolve_config_path(root, config_path)
   guard @fs.path_exists(config_path) else {
     config_error("config file not found: \{config_path}")
   }
@@ -15,6 +15,23 @@ pub fn load_project(
   }
   let tasks = parse_tasks(parsed)
   { root, config_path, tasks }
+}
+
+///|
+fn resolve_config_path(root : String, config_path : String) -> String {
+  let normalized_root = normalize_path(root)
+  let normalized_config = normalize_path(config_path)
+  if normalized_config.has_prefix("/") || normalized_config.contains(":/") {
+    normalized_config
+  } else if normalized_root != "." &&
+    (
+      normalized_config == normalized_root ||
+      normalized_config.has_prefix("\{normalized_root}/")
+    ) {
+    normalized_config
+  } else {
+    join_path(normalized_root, normalized_config)
+  }
 }
 
 ///|

@@ -110,6 +110,10 @@ async test "run_target executes tasks and caches results" {
   let bundle_path = join_path(root, "build/bundle.txt")
   let text = read_text_file(bundle_path)
   inspect(text, content="alpha-bundle")
+  let metrics = run_metrics(first)
+  assert_eq(metrics.executed_tasks, 2)
+  assert_eq(metrics.skipped_tasks, 0)
+  assert_true(metrics_csv_row(first).contains(",2,0,"))
 
   let second = run_target(project, Some("bundle"))
   assert_eq(second.executed.length(), 0)
@@ -208,4 +212,46 @@ async test "run_target blocks dependent tasks after a failure" {
   } noraise {
     _ => fail("expected run_target to reject the failed dependency")
   }
+}
+
+///|
+async test "run_target reruns a task when a declared output is tampered with" {
+  let root = fixture_dir("tampered-output")
+  reset_dir(root)
+  let config_path = join_path(root, "Moonforge.toml")
+  write_config(config_path)
+  let project = load_project(root~, config_path~)
+  ignore(run_target(project, Some("bundle")))
+  let bundle_path = join_path(root, "build/bundle.txt")
+  write_text_file(bundle_path, "tampered")
+
+  let rerun = run_target(project, Some("bundle"))
+  assert_eq(rerun.executed.length(), 1)
+  assert_true(rerun.executed.contains("bundle"))
+  inspect(read_text_file(bundle_path), content="alpha-bundle")
+}
+
+///|
+test "load_project resolves the default config below the project root" {
+  let root = fixture_dir("relative-root")
+  reset_dir(root)
+  let config_path = join_path(root, "Moonforge.toml")
+  write_config(config_path)
+  let project = load_project(root~)
+  assert_eq(project.config_path, normalize_path(config_path))
+}
+
+///|
+async test "clean_project removes outputs below the project root" {
+  let root = fixture_dir("root-clean")
+  reset_dir(root)
+  let config_path = join_path(root, "Moonforge.toml")
+  write_config(config_path)
+  let project = load_project(root~, config_path~)
+  ignore(run_target(project, Some("bundle")))
+  let output_path = join_path(root, "build/bundle.txt")
+  assert_true(@fs.path_exists(output_path))
+  let removed = clean_project(project)
+  assert_true(removed.contains("build/bundle.txt"))
+  assert_true(!@fs.path_exists(output_path))
 }

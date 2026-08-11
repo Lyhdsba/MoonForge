@@ -93,3 +93,36 @@ jobs:
       - name: Acceptance script
         shell: pwsh
         run: ./scripts/verify_acceptance.ps1
+
+  benchmark:
+    name: Reproducible Benchmark Workloads
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup MoonBit
+        uses: hustcer/setup-moonbit@v1
+        with:
+          version: "0.10.3+16975d007"
+          core-version: "0.10.3+16975d007"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Update MoonBit registry
+        run: moon update
+
+      - name: Run cold and warm workloads
+        shell: pwsh
+        run: ./scripts/run_benchmarks.ps1 -Jobs 4
+
+      - name: Show benchmark data
+        run: Get-Content benchmarks/results/latest.csv

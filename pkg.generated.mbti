@@ -7,6 +7,20 @@ import {
 }
 
 // Values
+pub fn audit_code_label(AuditCode) -> String
+
+pub fn audit_project(Project) -> AuditReport raise MoonforgeError
+
+pub fn audit_severity_label(AuditSeverity) -> String
+
+pub fn audit_status(AuditReport) -> String
+
+pub fn benchmark_description(BenchmarkSpec) -> String
+
+pub fn benchmark_specs() -> Array[BenchmarkSpec]
+
+pub fn build_benchmark_project(BenchmarkSpec) -> Project
+
 pub fn clean_project(Project) -> Array[String] raise MoonforgeError
 
 pub fn doctor(Project) -> Array[String] raise MoonforgeError
@@ -27,6 +41,10 @@ pub fn load_project(root? : String, config_path? : String) -> Project raise Moon
 
 pub fn make_plan(Project, CacheSnapshot, String?) -> (Array[String], Array[Array[String]], Array[TaskPlan]) raise MoonforgeError
 
+pub fn metrics_csv_header() -> String
+
+pub fn metrics_csv_row(RunSummary) -> String
+
 pub fn parse_cli(Array[String]) -> CliCommand raise MoonforgeError
 
 pub fn plan_for_task(Array[TaskPlan], String) -> TaskPlan?
@@ -35,9 +53,15 @@ pub fn project_stats(Project) -> ProjectStats raise MoonforgeError
 
 pub fn reason_message(PlanReason) -> String
 
+pub fn render_audit_report(Project) -> Array[String] raise MoonforgeError
+
 pub fn render_graph(Project, String?) -> Array[String] raise MoonforgeError
 
 pub fn render_project_stats(Project) -> Array[String] raise MoonforgeError
+
+pub fn render_run_metrics(RunSummary) -> Array[String]
+
+pub fn run_metrics(RunSummary) -> RunMetrics
 
 pub async fn run_target(Project, String?, jobs? : Int) -> RunSummary raise MoonforgeError
 
@@ -55,6 +79,49 @@ pub fn validate_project(Project) -> Unit raise MoonforgeError
 type MoonforgeError derive(@debug.Debug)
 
 // Types and methods
+pub(all) enum AuditCode {
+  DuplicateOutput
+  OverlappingOutput
+  MissingInput
+  EmptyCommand
+  UnreachableTask
+  PhonyTaskInfo
+} derive(Eq, @debug.Debug)
+
+pub struct AuditFinding {
+  severity : AuditSeverity
+  code : AuditCode
+  task : String
+  related_task : String?
+  path : String?
+  message : String
+} derive(Eq, @debug.Debug)
+
+pub struct AuditReport {
+  stats : ProjectStats
+  findings : Array[AuditFinding]
+} derive(@debug.Debug)
+
+pub(all) enum AuditSeverity {
+  Error
+  Warning
+  Info
+} derive(Eq, @debug.Debug)
+
+pub(all) enum BenchmarkShape {
+  Chain
+  Mixed
+  Fanout
+} derive(Eq, @debug.Debug)
+
+pub struct BenchmarkSpec {
+  name : String
+  task_count : Int
+  depth : Int
+  fanout : Int
+  shape : BenchmarkShape
+} derive(Eq, @debug.Debug)
+
 pub struct CacheEntry {
   command_hash : String
   input_hash : String
@@ -73,6 +140,7 @@ pub(all) enum CliCommand {
   Graph(config_path~ : String, target~ : String?)
   Explain(config_path~ : String, target~ : String?)
   Stats(config_path~ : String)
+  Audit(config_path~ : String)
   Clean(config_path~ : String)
   Doctor(config_path~ : String)
   Run(config_path~ : String, target~ : String?, jobs~ : Int)
@@ -84,6 +152,7 @@ pub(all) enum PlanReason {
   CommandChanged
   InputsChanged
   OutputMissing
+  OutputsChanged
   DependencyReran(Array[String])
   UpToDate
 } derive(Eq, @debug.Debug)
@@ -112,10 +181,22 @@ pub struct ProjectStats {
   unreachable_tasks : Int
 } derive(@debug.Debug)
 
+pub struct RunMetrics {
+  total_tasks : Int
+  executed_tasks : Int
+  skipped_tasks : Int
+  total_duration_ms : Int
+  average_duration_ms : Int
+  cache_hit_percent : Int
+  longest_task : String?
+  longest_duration_ms : Int
+} derive(@debug.Debug)
+
 pub struct RunSummary {
   plans : Array[TaskPlan]
   executed : Array[String]
   skipped : Array[String]
+  durations_ms : Map[String, Int]
 } derive(@debug.Debug)
 
 pub struct Task {
